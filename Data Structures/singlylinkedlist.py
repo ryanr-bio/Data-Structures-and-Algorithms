@@ -46,22 +46,41 @@ class SinglyLinkedList(object):
         self.length -= 1
         return current_node
 
+    def __findIndex(self, index):
+        #Not sure if negative indexing needs to be added for linkedlists.
+        if (self.length - 1) < index:
+            return "Index is out of list length!"
+        current_node = self.head
+        for _ in range(index):
+            current_node = current_node.next
+        return current_node
+    
     def __getitem__(self, index):
-        if (self.length - 1) < index:
-            return "Index is out of list length!"
-        current_node = self.head
-        for _ in range(index):
-            current_node = current_node.next
-        return current_node.data.value
-
+        current_node = self.__findIndex(index)
+        if type(current_node) == Node:
+            return current_node.data.value
+        return current_node
+    
     def __setitem__(self, index, data):
-        if (self.length - 1) < index:
-            return "Index is out of list length!"
-        current_node = self.head
-        for _ in range(index):
-            current_node = current_node.next
-        current_node.data = ctypes.py_object(data)
-        return current_node.data
+        current_node = self.__findIndex(index)
+        if type(current_node) == Node:
+            current_node.data = ctypes.py_object(data)
+            return current_node.data
+        return current_node
+
+    def insert(self, index, data):
+        new_node = Node(data)
+        if index == 0:
+            new_node.next = self.head
+            self.head = new_node
+            self.length += 1
+            return new_node
+        prev_index = index - 1
+        prev_node = self.__findIndex(prev_index)
+        new_node.next = prev_node.next
+        prev_node.next = new_node
+        self.length += 1
+        return new_node
 
     def __str__(self):
         if self.head == None:
@@ -86,3 +105,7 @@ if __name__ == '__main__':
     print(f"Node at Index 2: {linkedList[2]}")
     linkedList[0] = "A"
     print(f"Node at index 0 is set to: {linkedList[0]}")
+    linkedList.insert(0, "Z")
+    print(f"Insertion at 0 index: {linkedList}")
+    linkedList.insert(2, "B")
+    print(f"Insertion at index 2: {linkedList}")
