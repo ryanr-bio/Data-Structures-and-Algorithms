@@ -21,9 +21,7 @@ class SinglyLinkedList(object):
             self.tail = self.head
             self.length += 1
             return self.tail
-        current_node = self.head
-        while current_node.next != None:
-            current_node = current_node.next
+        current_node = self.__findIndex(self.length-1)
         new_node = Node(data)
         current_node.next = new_node
         self.tail = new_node
@@ -38,9 +36,7 @@ class SinglyLinkedList(object):
             self.tail = None
             self.length -= 1
             return self
-        current_node = self.head
-        for _ in range(self.length - 2):
-            current_node = current_node.next
+        current_node = self.__findIndex(self.length - 2)
         current_node.next = None
         self.tail = current_node
         self.length -= 1
