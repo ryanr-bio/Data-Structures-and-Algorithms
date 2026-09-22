@@ -24,14 +24,15 @@ class DynamicArray(object):
 
     def __getitem__(self, index):
         # Method to return value when calling a[i]
-        return self.array[index]
+        if index < self.n_elemcount:
+            return self.array[index]
+        else:
+            return None
 
     def __setitem__(self, index, data):
-        '''Could maybe replace the try-except block with a simple if statement checking whether index is <= elemcount, if no then raise elemcount?'''
-        # Error handling to skip over null pointers
-        try:
+        if index < self.n_elemcount:
             x = self.array[index]
-        except ValueError:
+        else:
             # ensures that element is only counted when setting empty pointer into value
             self.n_elemcount += 1
         self.array[index] = data
@@ -42,8 +43,10 @@ class DynamicArray(object):
         new_capacity = n_capacity
         new_array = (ctypes.py_object * new_capacity)()
         index = self.n_elemcount - 1
-        for i in range(index):
+        i = 0
+        while index > 0 and i < self.n_elemcount:
             new_array[i] = self.array[i]
+            i += 1
         self.array = new_array
         return self.array
 
@@ -68,7 +71,7 @@ class DynamicArray(object):
         self.n_elemcount -= 1
         self.array[(n-1)] = None
         if self.capacity >= (3 * n):
-            new_capacity = self.n_elemcount / 2
+            new_capacity = self.n_elemcount // 2
             self.resize(new_capacity)
         return self.array
     
@@ -82,12 +85,12 @@ if __name__ == '__main__':
     value to something else would not change its length.
     """
 
-    '''test[1] = "A"
+    test[1] = "A"
     print(f"First test: {len(test)}")
     test[0] = "Y"
     print(f"Second test: {len(test)}")
     test[2] = 23
-    print(f"Final test: {len(test)}")'''
+    print(f"Final test: {len(test)}")
 
     """
     This test was to check whether appending a value to the end of the array was
@@ -95,20 +98,20 @@ if __name__ == '__main__':
     Also checking the print() showing up as a normal pythonic list.
     """
 
-    '''test.append("Y")
+    test.append("Y")
     test.append("Z")
     print(f"Current Array is: {test}")
-    print(f"Number of elements in this array is {len(test)}")'''
+    print(f"Number of elements in this array is {len(test)}")
 
     """
     This test was to check whether the remove method properly adjusts the
     array index while deleting the chosen index.
     """
 
-    '''test.append("Y")
+    test.append("Y")
     test.append("Z")
     test.append("A")
     print(test)
 
     test.remove(2)
-    print(test)'''
+    print(test)
