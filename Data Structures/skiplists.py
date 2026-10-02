@@ -22,19 +22,21 @@ class SkipListSSet(object):
     def __len__(self):
         return self.length
 
-    def __getitem__(self, key):
-        pass
-
-    def __setitem__(self, key, value):
-        pass
+    def __getitem__(self, index):
+        i = 0
+        current_node = self.sentinel
+        while i < self.length:
+            if i == index:
+                return current_node.array[0].data.value
+            current_node = current_node.array[0]
+            i += 1
+        return "{index} is out of index."
 
     def __searchpath(self, data):
-        i = self.maxheight
         current_node = self.sentinel
         for i in range(self.maxheight + 1, -1, -1):
-            while current_node.array[i] != None and current_node.array[i].data.value <= data:
+            while current_node.array[i] != None and current_node.array[i].data.value < data:
                 current_node = current_node.array[i]
-        print(current_node.data)
         return current_node
     
     def pick_height(self, max_height):
@@ -47,8 +49,9 @@ class SkipListSSet(object):
     
     def add(self, data):
         prev_node = self.__searchpath(data)
-        if prev_node.data.value == data:
-            return "Item already in sorted set!"
+        if prev_node.array[0] != None and prev_node.array[0].data.value == data:
+            print("Item already in sorted set!")
+            return
         new_node = Node(data, self.pick_height(self.maxheight))
         new_node.array[0] = prev_node.array[0]
         prev_node.array[0] = new_node
@@ -62,7 +65,20 @@ class SkipListSSet(object):
         return new_node
              
     def remove(self, data):
-        pass
+        prev_node = self.__searchpath(data)
+        if prev_node.array[0] == None or prev_node.array[0].data.value != data:
+            print("Item not found!")
+            return
+        height = prev_node.array[0].height
+        prev_node.array[0] = prev_node.array[0].array[0]
+        for i in range(1, height + 1):
+            current_node = self.sentinel
+            while current_node.array[i] != None and current_node.array[i].data.value < data:
+                current_node = current_node.array[i]
+            current_node.array[i] = current_node.array[i].array[i]
+        self.length -= 1
+        return 
+            
     
     def __str__(self):
         current_node = self.sentinel
@@ -80,10 +96,14 @@ class SkipListSSet(object):
 if __name__ == '__main__':
     skiplist = SkipListSSet(32)
     skiplist.add(0)
-    print(f"Sorted Set with 1st item addition: {skiplist}")
-    skiplist.add(1)
-    print(f"Sorted Set with 2nd item addition: {skiplist}")
+    skiplist.add(5)
     skiplist.add(3)
-    print(f"Sorted Set with 3rd item addition: {skiplist}")
     skiplist.add(2)
-    print(f"Sorted Set with 4th item addition: {skiplist}")
+    skiplist.add(0) # Testing statement for detecting repeating data.
+    print(f"Sorted Set after addition: {skiplist}")
+    print(f"3rd element is {skiplist[2]}")
+    skiplist.remove(3)
+    skiplist.remove(5)
+    skiplist.remove(7) # Testing statement for avoiding wrong removal request.
+    print(f"Sorted Set after removal: {skiplist}")
+    print(f"2nd element is {skiplist[1]}")
